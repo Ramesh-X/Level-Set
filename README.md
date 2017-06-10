@@ -1,4 +1,4 @@
-# Level-Set
+# Level Set Image Segmentation using Python
 
 ## Introduction
 
