@@ -44,7 +44,7 @@ def del2(M):
     return D / 4
 
 
-def drlse_edge(phi_0, g, lmda, mu, alfa, epsilon, timestep, iter, potentialFunction):  # Updated Level Set Function
+def drlse_edge(phi_0, g, lmda, mu, alfa, epsilon, timestep, iters, potentialFunction):  # Updated Level Set Function
     """
 
     :param phi_0: level set function to be updated by level set evolution
@@ -54,7 +54,7 @@ def drlse_edge(phi_0, g, lmda, mu, alfa, epsilon, timestep, iter, potentialFunct
     :param alfa: weight of the weighted area term
     :param epsilon: width of Dirac Delta function
     :param timestep: time step
-    :param iter: number of iterations
+    :param iters: number of iterations
     :param potentialFunction: choice of potential function in distance regularization term.
 %              As mentioned in the above paper, two choices are provided: potentialFunction='single-well' or
 %              potentialFunction='double-well', which correspond to the potential functions p1 (single-well)
@@ -62,7 +62,7 @@ def drlse_edge(phi_0, g, lmda, mu, alfa, epsilon, timestep, iter, potentialFunct
     """
     phi = phi_0.copy()
     [vy, vx] = np.gradient(g)
-    for k in range(iter):
+    for k in range(iters):
         phi = NeumannBoundCond(phi)
         [phi_y, phi_x] = np.gradient(phi)
         s = np.sqrt(np.square(phi_x) + np.square(phi_y))
@@ -83,7 +83,7 @@ def drlse_edge(phi_0, g, lmda, mu, alfa, epsilon, timestep, iter, potentialFunct
     return phi
 
 
-def distReg_p2(phi: np.ndarray) -> np.ndarray:
+def distReg_p2(phi):
     """
         compute the distance regularization term with the double-well potential p2 in equation (16)
     """
@@ -96,25 +96,34 @@ def distReg_p2(phi: np.ndarray) -> np.ndarray:
     return div(dps * phi_x - phi_x, dps * phi_y - phi_y) + filters.laplace(phi, mode='wrap')
 
 
-def div(nx: np.ndarray, ny: np.ndarray) -> np.ndarray:
+def div(nx, ny):
     [junk, nxx] = np.gradient(nx)
     [nyy, junk] = np.gradient(ny)
     return nxx + nyy
 
 
-def Dirac(x: np.ndarray, sigma: float) -> np.ndarray:
+def Dirac(x, sigma):
     f = (1 / 2 / sigma) * (1 + np.cos(np.pi * x / sigma))
     b = (x <= sigma) & (x >= -sigma)
     return f * b
 
 
-def NeumannBoundCond(f: np.ndarray) -> np.ndarray:
+def NeumannBoundCond(f):
     """
         Make a function satisfy Neumann boundary condition
     """
-    [nrow, ncol] = f.shape
+    [ny, nx] = f.shape
     g = f.copy()
-    g[[0, nrow - 1], [0, ncol - 1]] = g[[2, nrow - 3], [2, ncol - 3]]
-    g[[0, nrow - 1], 1: ncol - 1] = g[[2, nrow - 3], 1: ncol - 1]
-    g[1: nrow - 1, [0, ncol - 1]] = g[1: nrow - 1, [2, ncol - 3]]
+
+    g[0, 0] = g[2, 2]
+    g[0, nx-1] = g[2, nx-3]
+    g[ny-1, 0] = g[ny-3, 2]
+    g[ny-1, nx-1] = g[ny-3, nx-3]
+
+    g[0, 1:-1] = g[2, 1:-1]
+    g[ny-1, 1:-1] = g[ny-3, 1:-1]
+
+    g[1:-1, 0] = g[1:-1, 2]
+    g[1:-1, nx-1] = g[1:-1, nx-3]
+
     return g
