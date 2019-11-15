@@ -7,7 +7,7 @@ import lv_set.drlse_algo as drlse
 import numpy as np
 
 
-img = np.array(imread('../gourd.bmp', True), dtype='float32')
+img = np.array(imread('gourd.bmp', True), dtype='float32')
 # im_t = img[:, :, 1]
 
 # parameters
