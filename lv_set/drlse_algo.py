@@ -14,6 +14,8 @@ Released Under MIT License
 import numpy as np
 import scipy.ndimage.filters as filters
 
+from lv_set.potential_func import SINGLE_WELL, DOUBLE_WELL
+
 
 def del2(M):
     dx = 1
@@ -83,9 +85,9 @@ def drlse_edge(phi_0, g, lmda, mu, alfa, epsilon, timestep, iters, potentialFunc
         Nx = phi_x / (s + smallNumber)  # add a small positive number to avoid division by zero
         Ny = phi_y / (s + smallNumber)
         curvature = div(Nx, Ny)
-        if potentialFunction == 'single-well':
+        if potentialFunction == SINGLE_WELL:
             distRegTerm = filters.laplace(phi, mode='wrap') - curvature  # compute distance regularization term in equation (13) with the single-well potential p1.
-        elif potentialFunction == 'double-well':
+        elif potentialFunction == DOUBLE_WELL:
             distRegTerm = distReg_p2(phi)  # compute the distance regularization term in eqaution (13) with the double-well potential p2.
         else:
             print('Error: Wrong choice of potential function. Please input the string "single-well" or "double-well" in the drlse_edge function.')
