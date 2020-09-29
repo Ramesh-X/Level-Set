@@ -18,26 +18,61 @@ from lv_set.find_lsf import find_lsf
 from lv_set.potential_func import *
 from lv_set.show_fig import draw_all
 
-img = imread('gourd.bmp', True)
 
-# parameters
-timestep = 1  # time step
-iter_inner = 10
-iter_outer = 30
-lmda = 5  # coefficient of the weighted length term L(phi)
-alfa = -3  # coefficient of the weighted area term A(phi)
-epsilon = 1.5  # parameter that specifies the width of the DiracDelta function
-sigma = 0.8  # scale parameter in Gaussian kernel
+def gourd_params():
+    img = imread('gourd.bmp', True)
+    img = np.interp(img, [np.min(img), np.max(img)], [0, 255])
 
-# initialize LSF as binary step function
-c0 = 2
-initialLSF = c0 * np.ones(img.shape)
-# generate the initial region R0 as two rectangles
-initialLSF[25:34, 20:24] = -c0
-initialLSF[25:34, 40:49] = -c0
+    # initialize LSF as binary step function
+    c0 = 2
+    initial_lsf = c0 * np.ones(img.shape)
+    # generate the initial region R0 as two rectangles
+    initial_lsf[24:35, 19:25] = -c0
+    initial_lsf[24:35, 39:50] = -c0
 
-phi = find_lsf(img=img, initial_lsf=initialLSF, timestep=timestep, iter_inner=iter_inner, iter_outer=iter_outer,
-               lmda=lmda, alfa=alfa, epsilon=epsilon, sigma=sigma, potential_function=DOUBLE_WELL)
+    # parameters
+    return {
+        'img': img,
+        'initial_lsf': initial_lsf,
+        'timestep': 1,  # time step
+        'iter_inner': 10,
+        'iter_outer': 30,
+        'lmda': 5,  # coefficient of the weighted length term L(phi)
+        'alfa': -3,  # coefficient of the weighted area term A(phi)
+        'epsilon': 1.5,  # parameter that specifies the width of the DiracDelta function
+        'sigma': 0.8,  # scale parameter in Gaussian kernel
+        'potential_function': DOUBLE_WELL,
+    }
+
+
+def two_cells_params():
+    img = imread('twocells.bmp', True)
+    img = np.interp(img, [np.min(img), np.max(img)], [0, 255])
+
+    # initialize LSF as binary step function
+    c0 = 2
+    initial_lsf = c0 * np.ones(img.shape)
+    # generate the initial region R0 as two rectangles
+    initial_lsf[9:55, 9:75] = -c0
+
+    # parameters
+    return {
+        'img': img,
+        'initial_lsf': initial_lsf,
+        'timestep': 5,  # time step
+        'iter_inner': 5,
+        'iter_outer': 40,
+        'lmda': 5,  # coefficient of the weighted length term L(phi)
+        'alfa': 1.5,  # coefficient of the weighted area term A(phi)
+        'epsilon': 1.5,  # parameter that specifies the width of the DiracDelta function
+        'sigma': 1.5,  # scale parameter in Gaussian kernel
+        'potential_function': DOUBLE_WELL,
+    }
+
+
+params = gourd_params()
+# params = two_cells_params()
+phi = find_lsf(**params)
 
 print('Show final output')
-draw_all(phi, img, 10)
+draw_all(phi, params['img'], 10)

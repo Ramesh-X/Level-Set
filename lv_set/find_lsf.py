@@ -38,6 +38,9 @@ def find_lsf(img: np.ndarray, initial_lsf: np.ndarray, timestep=1, iter_inner=10
     if len(img.shape) != len(initial_lsf.shape):
         raise Exception("Input image and the initial LSF should be in the same shape")
 
+    if np.max(img) <= 1:
+        raise Exception("Please make sure the image data is in the range [0, 255]")
+
     # parameters
     mu = 0.2 / timestep  # coefficient of the distance regularization term R(phi)
 
